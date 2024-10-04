@@ -5,7 +5,7 @@ provider "aws" {
 module "vpc" {
   source               = "terraform-aws-modules/vpc/aws"
   version              = "2.77.0"
-  name                 = "vpc-foodSystem"
+  name                 = "vpc-food-system"
   cidr                 = "10.0.0.0/16"
   azs                  = data.aws_availability_zones.available.names
   public_subnets       = ["10.0.4.0/24", "10.0.5.0/24", "10.0.6.0/24"]
@@ -13,17 +13,17 @@ module "vpc" {
   enable_dns_support   = true
 }
 
-resource "aws_db_subnet_group" "subnet-foodSystem" {
-  name       = "subnet-foodSystem"
+resource "aws_db_subnet_group" "subnet-food-system" {
+  name       = "subnet-food-system"
   subnet_ids = module.vpc.public_subnets
 
   tags = {
-    Name = "tag-foodSystem"
+    Name = "tag-food-system"
   }
 }
 
-resource "aws_security_group" "rds-foodSystem" {
-  name   = "rds-foodSystem"
+resource "aws_security_group" "rds-food-system" {
+  name   = "rds-food-system"
   vpc_id = module.vpc.vpc_id
 
   ingress {
@@ -41,12 +41,12 @@ resource "aws_security_group" "rds-foodSystem" {
   }
 
   tags = {
-    Name = "tag-foodSystem"
+    Name = "tag-food-system"
   }
 }
 
-resource "aws_db_parameter_group" "foodSystem" {
-  name   = "group-foodSystem"
+resource "aws_db_parameter_group" "food-system" {
+  name   = "group-food-system"
   family = "postgres14"
 
   parameter {
@@ -55,17 +55,17 @@ resource "aws_db_parameter_group" "foodSystem" {
   }
 }
 
-resource "aws_db_instance" "db-foodSystem" {
-  identifier             = "db-foodSystem"
+resource "aws_db_instance" "db-food-system" {
+  identifier             = "db-food-system"
   instance_class         = "db.t3.micro"
   allocated_storage      = 20
   engine                 = "postgres"
   engine_version         = 14.9
   username               = var.db_user
   password               = var.db_password
-  db_subnet_group_name   = aws_db_subnet_group.foodSystem.name
-  vpc_security_group_ids = [aws_security_group.foodSystem.id]
-  parameter_group_name   = aws_db_parameter_group.foodsystem.name
+  db_subnet_group_name   = aws_db_subnet_group.food-system.name
+  vpc_security_group_ids = [aws_security_group.food-system.id]
+  parameter_group_name   = aws_db_parameter_group.food-system.name
   publicly_accessible    = true
   skip_final_snapshot    = true
 }
