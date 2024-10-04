@@ -6,11 +6,11 @@ variable "region" {
 variable "db_user" {
   type        = string
   description = "RDS user"
-  default     = "tech"
+  default     = "systemdb_user"
 }
 
 variable "db_password" {
   description = "RDS password"
   type        = string
-  default     = "tech_passwd"
+  default     = "1234"
 }

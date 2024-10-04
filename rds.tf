@@ -5,7 +5,7 @@ provider "aws" {
 module "vpc" {
   source               = "terraform-aws-modules/vpc/aws"
   version              = "2.77.0"
-  name                 = "tech-challenge-fiap-fase3-vpc"
+  name                 = "vpc-foodSystem"
   cidr                 = "10.0.0.0/16"
   azs                  = data.aws_availability_zones.available.names
   public_subnets       = ["10.0.4.0/24", "10.0.5.0/24", "10.0.6.0/24"]
@@ -13,17 +13,17 @@ module "vpc" {
   enable_dns_support   = true
 }
 
-resource "aws_db_subnet_group" "tech-challenge" {
-  name       = "tech-challenge-fiap-fase3-sub"
+resource "aws_db_subnet_group" "subnet-foodSystem" {
+  name       = "subnet-foodSystem"
   subnet_ids = module.vpc.public_subnets
 
   tags = {
-    Name = "Tech Challenge Fase 3 Subnets"
+    Name = "tag-foodSystem"
   }
 }
 
-resource "aws_security_group" "rds" {
-  name   = "tech-challenge-fiap-fase3-rds"
+resource "aws_security_group" "rds-foodSystem" {
+  name   = "rds-foodSystem"
   vpc_id = module.vpc.vpc_id
 
   ingress {
@@ -41,12 +41,12 @@ resource "aws_security_group" "rds" {
   }
 
   tags = {
-    Name = "Tech Challenge Fiap Fase 3 Security Group"
+    Name = "tag-foodSystem"
   }
 }
 
-resource "aws_db_parameter_group" "tech-challenge" {
-  name   = "tech-challenge-fiap-fase3-parameter-group"
+resource "aws_db_parameter_group" "foodSystem" {
+  name   = "group-foodSystem"
   family = "postgres14"
 
   parameter {
@@ -55,17 +55,17 @@ resource "aws_db_parameter_group" "tech-challenge" {
   }
 }
 
-resource "aws_db_instance" "tech-challenge" {
-  identifier             = "db-fiap-fast-food"
+resource "aws_db_instance" "db-foodSystem" {
+  identifier             = "db-foodSystem"
   instance_class         = "db.t3.micro"
   allocated_storage      = 20
   engine                 = "postgres"
   engine_version         = 14.9
   username               = var.db_user
   password               = var.db_password
-  db_subnet_group_name   = aws_db_subnet_group.tech-challenge.name
-  vpc_security_group_ids = [aws_security_group.rds.id]
-  parameter_group_name   = aws_db_parameter_group.tech-challenge.name
+  db_subnet_group_name   = aws_db_subnet_group.foodSystem.name
+  vpc_security_group_ids = [aws_security_group.foodSystem.id]
+  parameter_group_name   = aws_db_parameter_group.foodsystem.name
   publicly_accessible    = true
   skip_final_snapshot    = true
 }
