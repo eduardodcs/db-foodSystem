@@ -12,5 +12,5 @@ variable "db_user" {
 variable "db_password" {
   description = "RDS password"
   type        = string
-  default     = "1234"
+  default     = "1a2b3c4d"
 }
