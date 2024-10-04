@@ -5,7 +5,7 @@ provider "aws" {
 module "vpc" {
   source               = "terraform-aws-modules/vpc/aws"
   version              = "2.77.0"
-  name                 = "vpc-food-system"
+  name                 = "food-system-vpc"
   cidr                 = "10.0.0.0/16"
   azs                  = data.aws_availability_zones.available.names
   public_subnets       = ["10.0.4.0/24", "10.0.5.0/24", "10.0.6.0/24"]
@@ -13,17 +13,17 @@ module "vpc" {
   enable_dns_support   = true
 }
 
-resource "aws_db_subnet_group" "subnet-food-system" {
-  name       = "subnet-food-system"
+resource "aws_db_subnet_group" "food-system" {
+  name       = "food-system-sub"
   subnet_ids = module.vpc.public_subnets
 
   tags = {
-    Name = "tag-food-system"
+    Name = "Fiap"
   }
 }
 
-resource "aws_security_group" "rds-food-system" {
-  name   = "rds-food-system"
+resource "aws_security_group" "rds" {
+  name   = "food-system-rds"
   vpc_id = module.vpc.vpc_id
 
   ingress {
@@ -41,12 +41,12 @@ resource "aws_security_group" "rds-food-system" {
   }
 
   tags = {
-    Name = "tag-food-system"
+    Name = "Fiap"
   }
 }
 
 resource "aws_db_parameter_group" "food-system" {
-  name   = "group-food-system"
+  name   = "food-system-parameter-group"
   family = "postgres14"
 
   parameter {
@@ -55,8 +55,8 @@ resource "aws_db_parameter_group" "food-system" {
   }
 }
 
-resource "aws_db_instance" "db-food-system" {
-  identifier             = "db-food-system"
+resource "aws_db_instance" "food-system" {
+  identifier             = "db-fiap-fast-food"
   instance_class         = "db.t3.micro"
   allocated_storage      = 20
   engine                 = "postgres"
@@ -64,7 +64,7 @@ resource "aws_db_instance" "db-food-system" {
   username               = var.db_user
   password               = var.db_password
   db_subnet_group_name   = aws_db_subnet_group.food-system.name
-  vpc_security_group_ids = [aws_security_group.food-system.id]
+  vpc_security_group_ids = [aws_security_group.rds.id]
   parameter_group_name   = aws_db_parameter_group.food-system.name
   publicly_accessible    = true
   skip_final_snapshot    = true
